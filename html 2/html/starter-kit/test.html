@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tri-Murti CyberVerse Dashboard with AI-enhanced analytics.">
+  <meta name="author" content="Tri-Murti">
+  <title>Tri-Murti - CyberVerse Dashboard</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../assets/css/fontawesome.css">
+
+  <!-- Feather Icons -->
+  <link rel="stylesheet" href="../assets/css/feather-icon.css">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="../assets/css/bootstrap.css">
+
+  <!-- Poco Admin CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/fix-header-sidebar.css">
+  <link rel="stylesheet" href="../assets/css/color-1.css" media="screen">
+
+  <!-- Chart.js and Leaflet.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+  <!-- Custom CSS -->
+  <style>
+    .card h5 {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .card h2 {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .list-group-item-success {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .list-group-item-warning {
+      background-color: #ffc107;
+      color: white;
+    }
+
+    .list-group-item-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    #map {
+      height: 400px;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 100%;
+      margin-top: 15px;
+    }
+
+    .legend {
+      line-height: 18px;
+      color: #555;
+      background-color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    /* Style adjustments for Notification Panel */
+    .notification-panel {
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      padding: 15px;
+      margin-top: 20px;
+      box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <!-- Fixed Header -->
+    <div class="page-main-header">
+      <div class="main-header-right">
+        <div class="main-header-left text-center">
+          <div class="logo-wrapper"><a href="#"><img src="../assets/images/logo/trimurti.png" alt="Tri-Murti"></a></div>
+        </div>
+        <div class="nav-right">
+          <ul class="nav-menus">
+            <li><a class="text-dark" href="#" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-body-wrapper">
+      <div class="page-body">
+        <div class="container-fluid">
+          <!-- Page Header -->
+          <div class="page-header">
+            <div class="row">
+              <div class="col-lg-6 main-header">
+                <h2>Home <span>Dashboard</span></h2>
+                <h6 class="mb-0">Overview of Operations and Risk Management</h6>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Cards and Metrics -->
+          <div class="row">
+            <div class="col-xl-3 col-md-6">
+              <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                  <h5>Total Complaints</h5>
+                  <h2 id="total-complaints">120</h2>
+                  <span>+8% compared to last month</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                  <h5>Open Complaints</h5>
+                  <h2 id="open-complaints">80</h2>
+                  <span>▼ 5% this week</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                  <h5>Closed Complaints</h5>
+                  <h2 id="closed-complaints">30</h2>
+                  <span>+12% resolved cases</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="card bg-danger text-white mb-4">
+                <div class="card-body">
+                  <h5>High-Risk Complaints</h5>
+                  <h2 id="high-risk-complaints">10</h2>
+                  <span>▲ 10% increase this month</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Alerts and Mahesha's Action Panel -->
+          <div class="row mt-4">
+            <div class="col-lg-8">
+              <!-- Real-Time Alerts Section -->
+              <div class="card">
+                <div class="card-header bg-danger text-white">
+                  <h4>Recent Alerts</h4>
+                  <select class="form-select">
+                    <option value="severity">Sort by Severity</option>
+                    <option value="time">Sort by Time</option>
+                    <option value="type">Sort by Type</option>
+                  </select>
+                </div>
+                <div class="card-body">
+                  <ul id="alerts-list" class="list-group">
+                    <li class="list-group-item list-group-item-danger">
+                      Suspicious IP Activity - High Risk
+                      <a href="details/suspicious-ip.html" class="float-right">View Details</a>
+                    </li>
+                    <li class="list-group-item list-group-item-warning">
+                      Phishing Attempt - Medium Risk
+                      <a href="details/phishing-attempt.html" class="float-right">View Details</a>
+                    </li>
+                    <li class="list-group-item list-group-item-success">
+                      New Complaint Filed - Low Risk
+                      <a href="details/new-complaint.html" class="float-right">View Details</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <!-- Notifications and Actions -->
+              <div class="notification-panel">
+                <h4>Mahesha's Action Panel</h4>
+                <p><strong>Freeze Account:</strong> 5 pending approvals.</p>
+                <button class="btn btn-danger mb-2">Approve All</button>
+                <button class="btn btn-warning">Review Individually</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Charts and Complaint Metrics -->
+          <div class="row mt-4">
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Complaints Status Breakdown</h4>
+                  <canvas id="complaintStatusChart"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Complaints by Category</h4>
+                  <canvas id="complaintCategoryChart"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Complaint Trends</h4>
+                  <canvas id="complaintTrendChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Revenue Loss due to Financial Fraud -->
+          <div class="row mt-4">
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Revenue Loss due to Financial Fraud</h4>
+                  <canvas id="revenueLossChart"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Predicted Revenue Loss (AI)</h4>
+                  <canvas id="predictedLossChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Incident Hotspot Map -->
+          <section id="live-incident-map" class="col-sm-12 mt-4">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Live Incident Map</h4>
+                <div id="map"></div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-6 footer-copyright">
+              <p class="mb-0">Copyright © 2021 Tri-Murti. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- JS Scripts -->
+  <script src="../assets/js/jquery-3.5.1.min.js"></script>
+  <script src="../assets/js/bootstrap/popper.min.js"></script>
+  <script src="../assets/js/bootstrap/bootstrap.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="../assets/js/icons/feather-icon/feather.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Complaint Status Pie Chart
+      var ctxStatus = document.getElementById('complaintStatusChart').getContext('2d');
+      var complaintStatusChart = new Chart(ctxStatus, {
+        type: 'pie',
+        data: {
+          labels: ['Open', 'Closed', 'High-Risk'],
+          datasets: [{
+            label: 'Complaints',
+            data: [80, 30, 10],
+            backgroundColor: ['#007bff', '#28a745', '#dc3545']
+          }]
+        }
+      });
+
+      // Complaint Category Doughnut Chart
+      var ctxCategory = document.getElementById('complaintCategoryChart').getContext('2d');
+      var complaintCategoryChart = new Chart(ctxCategory, {
+        type: 'doughnut',
+        data: {
+          labels: ['Financial Fraud', 'Phishing', 'Identity Theft'],
+          datasets: [{
+            label: 'Categories',
+            data: [40, 30, 50],
+            backgroundColor: ['#17a2b8', '#ffc107', '#fd7e14']
+          }]
+        }
+      });
+
+      // Complaint Trends Line Chart
+      var ctxTrend = document.getElementById('complaintTrendChart').getContext('2d');
+      var complaintTrendChart = new Chart(ctxTrend, {
+        type: 'line',
+        data: {
+          labels: ['April', 'May', 'June', 'July', 'August', 'September'],
+          datasets: [{
+            label: 'Complaints',
+            data: [50, 60, 70, 80, 90, 100],
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            fill: true
+          }]
+        }
+      });
+
+      // Revenue Loss Line Chart
+      var ctxRevenueLoss = document.getElementById('revenueLossChart').getContext('2d');
+      var revenueLossChart = new Chart(ctxRevenueLoss, {
+        type: 'line',
+        data: {
+          labels: ['January', 'February', 'March', 'April', 'May'],
+          datasets: [{
+            label: 'Revenue Loss',
+            data: [50000, 60000, 75000, 70000, 65000],
+            borderColor: '#dc3545',
+            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+            fill: true
+          }]
+        }
+      });
+
+      // Predicted Revenue Loss Line Chart (AI Integration)
+      var ctxPredictedLoss = document.getElementById('predictedLossChart').getContext('2d');
+      var predictedLossChart = new Chart(ctxPredictedLoss, {
+        type: 'line',
+        data: {
+          labels: ['June', 'July', 'August', 'September', 'October'],
+          datasets: [{
+            label: 'Predicted Revenue Loss',
+            data: [72000, 80000, 85000, 90000, 95000],
+            borderColor: '#fd7e14',
+            backgroundColor: 'rgba(253, 126, 20, 0.1)',
+            fill: true
+          }]
+        }
+      });
+
+      // Initialize Leaflet.js Map
+      var map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Sample data for complaints at various locations
+      var complaintData = [
+        { lat: 28.6139, lng: 77.2090, count: 20, risk: 'high' },    // Delhi
+        { lat: 19.0760, lng: 72.8777, count: 10, risk: 'medium' },  // Mumbai
+        { lat: 13.0827, lng: 80.2707, count: 5, risk: 'low' },      // Chennai
+        { lat: 22.5726, lng: 88.3639, count: 15, risk: 'medium' },  // Kolkata
+        { lat: 12.9716, lng: 77.5946, count: 25, risk: 'high' }     // Bangalore
+      ];
+
+      // Define color coding based on complaint risk
+      function getColor(risk) {
+        return risk === 'high' ? 'rgba(255, 0, 0, 0.5)' :
+               risk === 'medium' ? 'rgba(255, 165, 0, 0.5)' :
+               'rgba(0, 128, 0, 0.5)';
+      }
+
+      // Plot bubble hot spots for each complaint location
+      complaintData.forEach(function (data) {
+        L.circle([data.lat, data.lng], {
+          color: getColor(data.risk),
+          fillColor: getColor(data.risk),
+          fillOpacity: 0.5,
+          radius: data.count * 10000  // The radius is proportional to the number of complaints
+        }).addTo(map)
+        .bindPopup(`<strong>Location:</strong> ${data.lat}, ${data.lng}<br>
+                    <strong>Complaints:</strong> ${data.count}<br>
+                    <strong>Risk Level:</strong> ${data.risk}`);
+      });
+
+      // Add a legend to explain the colors
+      var legend = L.control({position: 'bottomright'});
+
+      legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'legend');
+        div.innerHTML += '<strong>Complaint Risk Levels</strong><br>';
+        div.innerHTML += '<i style="background: rgba(255, 0, 0, 0.5); width: 18px; height: 18px; display: inline-block;"></i> High Risk<br>';
+        div.innerHTML += '<i style="background: rgba(255, 165, 0, 0.5); width: 18px; height: 18px; display: inline-block;"></i> Medium Risk<br>';
+        div.innerHTML += '<i style="background: rgba(0, 128, 0, 0.5); width: 18px; height: 18px; display: inline-block;"></i> Low Risk<br>';
+        return div;
+      };
+
+      legend.addTo(map);
+    });
+  </script>
+</body>
+
+</html>

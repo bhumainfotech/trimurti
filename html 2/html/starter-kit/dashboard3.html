@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- Combined Meta Tags -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TriMurti Admin Dashboard. Complaint Management Dashboard for Law Enforcement Officers. Tri-Murti Real-Time Alerts Dashboard">
+  <meta name="keywords" content="TriMurti, admin template, responsive admin template, Complaint Management, Real-Time Alerts">
+  <meta name="author" content="TriMurti">
+  <link rel="icon" href="../assets/images/favicon.png" type="image/x-icon">
+  <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon">
+  <title>TriMurti Admin Dashboard</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- Feather Icons -->
+  <link rel="stylesheet" href="../assets/css/feather-icon.css">
+
+  <!-- ICO-font -->
+  <link rel="stylesheet" href="../assets/css/icofont.css">
+
+  <!-- Themify Icons -->
+  <link rel="stylesheet" href="../assets/css/themify.css">
+
+  <!-- Poco Admin Theme CSS -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/responsive.css">
+  <link rel="stylesheet" href="../assets/css/fix-header-sidebar.css">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+  <!-- Additional Custom Styles -->
+  <style>
+    /* Badge Styles */
+    .badge-high {
+      background-color: red;
+      color: white;
+    }
+
+    .badge-medium {
+      background-color: orange;
+      color: white;
+    }
+
+    .badge-low {
+      background-color: yellow;
+      color: black;
+    }
+
+    /* Alert Summary Card Styles */
+    .alert-summary-card {
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      margin: 10px 0;
+      text-align: center;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .alert-summary-card:hover {
+      transform: scale(1.05);
+    }
+
+    .alert-summary-card i {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .alert-summary-card h5 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .alert-summary-card p {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    /* Table Styles */
+    .table th,
+    .table td {
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    /* Button Styles */
+    .btn-sm {
+      font-size: 0.875rem;
+      padding: 6px 12px;
+    }
+
+    /* Loader Styles */
+    .loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .typewriter h1 {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 2rem;
+      animation: typing 3s steps(30, end), blink-caret 0.75s step-end infinite;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid;
+    }
+
+    @keyframes typing {
+      from {
+        width: 0;
+      }
+
+      to {
+        width: 100%;
+      }
+    }
+
+    @keyframes blink-caret {
+      from,
+      to {
+        border-color: transparent;
+      }
+
+      50% {
+        border-color: black;
+      }
+    }
+
+    /* Responsive Chart Containers */
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+    }
+
+    .chart-container {
+      flex: 1 1 calc(33.333% - 20px);
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      min-width: 250px;
+      height: 400px;
+    }
+
+    .chart-title {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* Entity Relationship Section */
+    .entity-relational {
+      background-color: #f7f7f7;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #entityGraph {
+      height: 400px;
+      margin-top: 20px;
+    }
+
+    /* Media Queries for Responsiveness */
+    @media only screen and (max-width: 992px) {
+      .chart-container {
+        flex: 1 1 calc(50% - 20px);
+      }
+    }
+
+    @media only screen and (max-width: 768px) {
+      .chart-container {
+        flex: 1 1 100%;
+      }
+
+      .alert-summary-card p {
+        font-size: 1.5rem;
+      }
+
+      .alert-summary-card h5 {
+        font-size: 1.1rem;
+      }
+
+      .alert-summary-card i {
+        font-size: 2.5rem;
+      }
+    }
+
+    /* Optional: Style for the Export Button */
+    .export-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loader starts-->
+  <div class="loader-wrapper">
+    <div class="typewriter">
+      <h1>TriMurti Dashboard Loading...</h1>
+    </div>
+  </div>
+  <!-- Loader ends-->
+
+  <!-- Page-wrapper Start-->
+  <div class="page-wrapper">
+    <!-- Page Header Start-->
+    <div class="page-main-header">
+      <div class="main-header-right">
+        <div class="main-header-left text-center">
+          <div class="logo-wrapper">
+            <a href="index.html"><img src="../assets/images/logo/logo.png" alt="TriMurti Logo"></a>
+          </div>
+        </div>
+        <div class="mobile-sidebar d-none">
+          <div class="media-body text-right switch-sm">
+            <label class="switch ml-3"><i class="font-primary" id="sidebar-toggle" data-feather="align-center"></i></label>
+          </div>
+        </div>
+        <div class="vertical-mobile-sidebar"><i class="fa fa-bars sidebar-bar"></i></div>
+        <div class="nav-right col pull-right right-menu">
+          <ul class="nav-menus">
+            <li><a class="text-dark" href="#" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>
+            <li><a class="right_side_toggle" href="#"><img class="img-fluid" src="../assets/images/dashboard/chat.png" alt="Chat"></a></li>
+            <li class="onhover-dropdown">
+              <span class="media user-header"><img class="img-fluid" src="../assets/images/dashboard/user.png" alt="User"></span>
+              <ul class="onhover-show-div profile-dropdown">
+                <li class="gradient-primary">
+                  <h5 class="f-w-600 mb-0">John Doe</h5><span>System Admin</span>
+                </li>
+                <li><i data-feather="user"></i>Profile</li>
+                <li><i data-feather="message-square"></i>Inbox</li>
+                <li><i data-feather="file-text"></i>Taskboard</li>
+                <li><i data-feather="settings"></i>Settings</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- Page Header Ends-->
+
+    <!-- Page Body Start-->
+    <div class="page-body-wrapper">
+      <!-- Page Sidebar Start-->
+      <div class="iconsidebar-menu">
+        <div class="sidebar">
+          <ul class="iconMenu-bar custom-scrollbar">
+            <!-- Home - Dashboard Section -->
+            <li><a class="bar-icons" href="#"><i class="pe-7s-home"></i><span>Home</span></a>
+              <ul class="iconbar-mainmenu custom-scrollbar">
+                <li class="iconbar-header">Dashboard</li>
+                <li><a href="index.html">Analytics Overview</a></li>
+                <li><a href="cases.html">All Cases</a></li>
+                <li><a href="reports.html">Reports</a></li>
+              </ul>
+            </li>
+
+            <!-- Brahma Section - Data Ingestion & Creation -->
+            <li><a class="bar-icons" href="#"><i class="pe-7s-server"></i><span>Brahma</span></a>
+              <ul class="iconbar-mainmenu custom-scrollbar">
+                <li class="iconbar-header">Data Management</li>
+                <li><a href="data-overview.html">Data Overview</a></li>
+                <li><a href="complaint-management.html">Complaint Management</a></li>
+                <li><a href="data-ingestion.html">Data Ingestion</a></li>
+                <li><a href="sources-evidence.html">Sources & Evidence</a></li>
+              </ul>
+            </li>
+
+            <!-- Vishnu Section - Intelligence & Analysis -->
+            <li><a class="bar-icons" href="#"><i class="pe-7s-light"></i><span>Vishnu</span></a>
+              <ul class="iconbar-mainmenu custom-scrollbar">
+                <li class="iconbar-header">Intelligence & Analysis</li>
+                <li><a href="case-analytics.html">Case Analytics</a></li>
+                <li><a href="ml-insights.html">Machine Learning Insights</a></li>
+                <li><a href="predictive-analysis.html">Predictive Analysis</a></li>
+                <li><a href="graph-network.html">Graph Network Analysis</a></li>
+              </ul>
+            </li>
+
+            <!-- Mahesha Section - Action, Alerts & Enforcement -->
+            <li><a class="bar-icons" href="#"><i class="pe-7s-attention"></i><span>Mahesha</span></a>
+              <ul class="iconbar-mainmenu custom-scrollbar">
+                <li class="iconbar-header">Action & Alerts</li>
+                <li><a href="real-time-alerts.html">Real-Time Alerts</a></li>
+                <li><a href="enforcement-dashboard.html">Action & Enforcement</a></li>
+                <li><a href="officer-dashboard.html">Officer Dashboard</a></li>
+                <li><a href="notifications.html">Notifications</a></li>
+              </ul>
+            </li>
+
+            <!-- Global Settings & Admin Panel -->
+            <li><a class="bar-icons" href="#"><i class="pe-7s-settings"></i><span>Global Settings</span></a>
+              <ul class="iconbar-mainmenu custom-scrollbar">
+                <li class="iconbar-header">Admin Panel</li>
+                <li><a href="user-management.html">User & Role Management</a></li>
+                <li><a href="system-configuration.html">System Configuration</a></li>
+                <li><a href="api-integrations.html">API Integrations</a></li>
+                <li><a href="reports.html">Reports & Documentation</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- Page Sidebar Ends-->
+
+      <!-- Page Content Start-->
+      <div class="page-body">
+        <div class="container-fluid">
+          <!-- Integrated Real-Time Alerts Content Starts -->
+    <div class="container-fluid mt-4">
+      <div class="row">
+        <!-- Total Alerts -->
+        <div class="col-lg-4 col-md-4 col-sm-12 d-flex">
+          <div class="alert-summary-card bg-danger text-white flex-fill">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h5>Total Alerts</h5>
+            <p>150</p>
+            <span class="badge badge-high">High Risk</span>
+          </div>
+        </div>
+        <!-- Open Alerts -->
+        <div class="col-lg-4 col-md-4 col-sm-12 d-flex">
+          <div class="alert-summary-card bg-warning text-white flex-fill">
+            <i class="fas fa-bell"></i>
+            <h5>Open Alerts</h5>
+            <p>100</p>
+            <span class="badge badge-medium">Medium Risk</span>
+          </div>
+        </div>
+        <!-- Critical Alerts -->
+        <div class="col-lg-4 col-md-4 col-sm-12 d-flex">
+          <div class="alert-summary-card bg-success text-white flex-fill">
+            <i class="fas fa-check-circle"></i>
+            <h5>Critical Alerts</h5>
+            <p>25</p>
+            <span class="badge badge-low">Low Risk</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts Table with Accordion for Details - Poco Theme -->
+<div class="card mb-4 shadow-sm border-0">
+  <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
+    <h4 class="mb-0">Real-Time Cybercrime Alerts</h4>
+    <button class="btn btn-primary btn-sm">Export Alerts</button>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th>Alert ID</th>
+            <th>Complaint Type</th>
+            <th>Category</th>
+            <th>Entities Involved</th>
+            <th>Risk Score</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Alert 1 -->
+          <tr data-toggle="collapse" data-target="#alertDetails1" aria-expanded="false" aria-controls="alertDetails1" class="accordion-button">
+            <td>#C1001</td>
+            <td>Online Financial Fraud</td>
+            <td><span class="badge badge-high">High</span></td>
+            <td>
+              <i class="fas fa-user"></i> John Doe<br>
+              <i class="fas fa-university"></i> ABC Bank
+            </td>
+            <td><span class="badge badge-danger">92%</span></td>
+            <td>2024-10-18</td>
+            <td>
+              <button class="btn btn-primary btn-sm view-details">View Details</button>
+              <button class="btn btn-warning btn-sm assign-officer">Assign Officer</button>
+            </td>
+          </tr>
+          <tr id="alertDetails1" class="collapse">
+            <td colspan="7">
+              <div class="row">
+                <!-- Left Column: Alert Overview and Actions -->
+                <div class="col-md-8">
+                  <!-- Alert Details Card -->
+                  <div class="card alert-details-card mb-4 shadow-sm border-0">
+                    <div class="card-body">
+                      <h5 class="card-title text-primary">Financial Fraud Detected</h5>
+                      <p class="card-text">
+                        <strong>Risk Level:</strong> <span class="badge badge-danger">High</span><br>
+                        <strong>Complaint Type:</strong> Financial Fraud<br>
+                        <strong>Assigned Officer:</strong> Officer Patel<br>
+                        <strong>Suspicious Account:</strong> ABC Credit Card<br>
+                        <strong>Location:</strong> Delhi<br>
+                        <strong>Timeline:</strong> 2024-10-18 to 2024-10-20
+                      </p>
+                      <!-- Action Buttons -->
+                      <div class="btn-group" role="group" aria-label="Action Buttons">
+                        <button class="btn btn-danger btn-sm">
+                          <i class="fas fa-lock"></i> Freeze Account
+                        </button>
+                        <button class="btn btn-warning btn-sm">
+                          <i class="fas fa-user-shield"></i> Dispatch Officer
+                        </button>
+                        <button class="btn btn-info btn-sm">
+                          <i class="fas fa-envelope"></i> Escalate
+                        </button>
+                      </div>
+                    </div>
+                    <div class="card-footer bg-light text-muted">
+                      <small><i class="far fa-clock"></i> Last Updated: 2024-10-19 12:45 PM</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Column: Timeline and Entities Linked -->
+                <div class="col-md-4">
+                  <!-- Timeline and Entities Card -->
+                  <div class="card timeline-card shadow-sm border-0">
+                    <div class="card-body">
+                      <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-clock"></i> Timeline</h6>
+                      <p class="card-text">2024-10-18 to 2024-10-20</p>
+                      <hr>
+                      <h6 class="card-subtitle mb-2 text-muted"><i class="fas fa-link"></i> Entities Involved</h6>
+                      <ul class="list-unstyled">
+                        <li><i class="fas fa-user"></i> John Doe</li>
+                        <li><i class="fas fa-university"></i> ABC Bank</li>
+                        <li><i class="fas fa-network-wired"></i> IP: 203.0.113.12</li>
+                      </ul>
+                    </div>
+                    <div class="card-footer bg-light text-muted">
+                      <small><i class="far fa-clock"></i> Entities Last Linked: 2024-10-18</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Add more alerts as necessary with similar structure -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+            <!-- 3-Column Layout for Charts -->
+            <div class="card-container">
+              <!-- Types of Alerts Chart (Pie) -->
+              <div class="chart-container">
+                <h5 class="chart-title">Types of Alerts</h5>
+                <canvas id="alertTypesChart"></canvas>
+              </div>
+
+              <!-- Pendency of Alerts Chart (Doughnut) -->
+              <div class="chart-container">
+                <h5 class="chart-title">Pendency of Alerts</h5>
+                <canvas id="alertPendencyChart"></canvas>
+              </div>
+
+              <!-- Resolved Alerts Chart (Bar) -->
+              <div class="chart-container">
+                <h5 class="chart-title">Resolved Alerts</h5>
+                <canvas id="resolvedAlertsChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Entity-Relationship Mapping Section -->
+            <div class="entity-relational mt-4">
+              <h4>Entity-Relationship Mapping</h4>
+              <p>Visualizing links between cases, suspects, and associated entities.</p>
+              <div id="entityGraph"></div>
+            </div>
+          </div>
+          <!-- Integrated Real-Time Alerts Content Ends -->
+        </div>
+      </div>
+      <!-- Page Content End-->
+
+      <!-- Footer Start-->
+      <footer class="footer">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-0">© 2024 TriMurti. All rights reserved.</p>
+            </div>
+            <div class="col-md-6">
+              <p class="pull-right mb-0">Powered by <i class="fa fa-heart"></i> TriMurti Team</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <!-- Footer End-->
+    </div>
+  </div>
+  <!-- Page-wrapper End-->
+
+  <!-- JS Scripts -->
+  <!-- jQuery -->
+  <script src="../assets/js/jquery-3.5.1.min.js"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="../assets/js/bootstrap/popper.min.js"></script>
+  <script src="../assets/js/bootstrap/bootstrap.js"></script>
+
+  <!-- Feather Icons -->
+  <script src="../assets/js/icons/feather-icon/feather.min.js"></script>
+  <script src="../assets/js/icons/feather-icon/feather-icon.js"></script>
+
+  <!-- Sidebar Menu -->
+  <script src="../assets/js/sidebar-menu.js"></script>
+
+  <!-- Configuration Scripts -->
+  <script src="../assets/js/config.js"></script>
+
+  <!-- Main Script -->
+  <script src="../assets/js/script.js"></script>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom JS for Integrated Real-Time Alerts Functionality -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Hide loader once content is loaded
+      document.querySelector('.loader-wrapper').style.display = 'none';
+
+      // Initialize Feather Icons
+      feather.replace();
+
+      // Initialize Leaflet Map for Entity-Relationship Graph
+      var mapEntityGraph = L.map('entityGraph').setView([20.5937, 78.9629], 5); // Centered on India
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(mapEntityGraph);
+
+      // Example Markers for Entity-Relationship
+      L.marker([28.6139, 77.2090]).addTo(mapEntityGraph) // Delhi
+        .bindPopup('<b>Entity 1:</b> John Doe').openPopup();
+
+      L.marker([19.0760, 72.8777]).addTo(mapEntityGraph) // Mumbai
+        .bindPopup('<b>Entity 2:</b> XYZ Bank').openPopup();
+
+      // Connecting Entities with Lines
+      var latlngs = [
+        [28.6139, 77.2090],
+        [19.0760, 72.8777]
+      ];
+      var polyline = L.polyline(latlngs, { color: 'blue' }).addTo(mapEntityGraph);
+
+      // Fit map to polyline
+      mapEntityGraph.fitBounds(polyline.getBounds());
+
+      // Initialize Charts
+      // 1. Types of Alerts Chart (Pie)
+      var alertTypesCtx = document.getElementById('alertTypesChart').getContext('2d');
+      var alertTypesChart = new Chart(alertTypesCtx, {
+        type: 'pie',
+        data: {
+          labels: ['Financial Fraud', 'Identity Theft', 'Suspicious Transactions', 'Unauthorized Access'],
+          datasets: [{
+            data: [30, 20, 40, 10],
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // 2. Pendency of Alerts Chart (Doughnut)
+      var alertPendencyCtx = document.getElementById('alertPendencyChart').getContext('2d');
+      var alertPendencyChart = new Chart(alertPendencyCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Open', 'In Progress', 'Closed'],
+          datasets: [{
+            data: [40, 35, 25],
+            backgroundColor: ['#FF6384', '#FFCE56', '#36A2EB'],
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // 3. Resolved Alerts Chart (Bar)
+      var resolvedAlertsCtx = document.getElementById('resolvedAlertsChart').getContext('2d');
+      var resolvedAlertsChart = new Chart(resolvedAlertsCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Officer A', 'Officer B', 'Officer C'],
+          datasets: [{
+            label: 'Resolved Alerts',
+            data: [12, 19, 7],
+            backgroundColor: ['#4BC0C0', '#FF6384', '#36A2EB'],
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+
+      // Action Buttons Functionality
+      $('.view-details').on('click', function () {
+        // Toggle the corresponding alert details
+        var target = $(this).closest('tr').data('target');
+        $(target).collapse('toggle');
+      });
+
+      $('.assign-officer').on('click', function () {
+        // Scroll to the Entity-Relationship section
+        $('html, body').animate({
+          scrollTop: $(".entity-relational").offset().top
+        }, 1000);
+      });
+    });
+  </script>
+</body>
+
+</html>

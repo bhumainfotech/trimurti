@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complaint Management Dashboard for Law Enforcement Officers">
+  <title>Complaint Management - Control and Command Centre</title>
+
+  <!-- Poco Admin Theme CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css"> <!-- Poco Admin Styles -->
+  <link rel="stylesheet" href="../assets/css/fix-header-sidebar.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+  <!-- External JS Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <!-- Custom Styles -->
+  <style>
+    .badge-high {
+      background-color: red;
+      color: white;
+    }
+
+    .badge-medium {
+      background-color: orange;
+      color: white;
+    }
+
+    .badge-low {
+      background-color: green;
+      color: white;
+    }
+
+    .officer-available {
+      color: green;
+      font-weight: bold;
+    }
+
+    .officer-busy {
+      color: orange;
+      font-weight: bold;
+    }
+
+    .officer-full {
+      color: red;
+      font-weight: bold;
+    }
+
+    .complaint-action-icons {
+      cursor: pointer;
+    }
+
+    .risk-score-badge {
+      padding: 5px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .high-risk {
+      background-color: red;
+      color: white;
+    }
+
+    .medium-risk {
+      background-color: orange;
+      color: white;
+    }
+
+    .low-risk {
+      background-color: green;
+      color: white;
+    }
+
+    #map {
+      height: 400px;
+      margin-top: 20px;
+    }
+
+    .card-custom {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid mt-4">
+    <!-- Complaint List View Section -->
+    <div class="card card-custom mb-4">
+      <div class="card-header bg-primary text-white">
+        <h4>Complaint List View</h4>
+      </div>
+      <div class="card-body">
+        <!-- Filters for Complaints -->
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <select id="filter-type" class="form-control">
+              <option value="all">All Types</option>
+              <option value="financial-fraud">Financial Fraud</option>
+              <option value="phishing">Phishing</option>
+              <option value="ransomware-attack">Ransomware Attack</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select id="filter-risk-level" class="form-control">
+              <option value="all">All Risk Levels</option>
+              <option value="high">High Risk</option>
+              <option value="medium">Medium Risk</option>
+              <option value="low">Low Risk</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select id="filter-status" class="form-control">
+              <option value="all">All Status</option>
+              <option value="new">New</option>
+              <option value="in-progress">In Progress</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <input type="text" id="filter-officer" class="form-control" placeholder="Filter by Officer">
+          </div>
+        </div>
+
+        <!-- Complaint Table -->
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th>Complaint ID</th>
+                <th>Complainant Name</th>
+                <th>Type of Complaint</th>
+                <th>Risk Level</th>
+                <th>Status</th>
+                <th>Officer Assigned</th>
+                <th>Date of Report</th>
+                <th>AI Risk Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Complaint Row with AI Risk Score -->
+              <tr>
+                <td>#12345</td>
+                <td>John Doe</td>
+                <td>Financial Fraud</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>In Progress</td>
+                <td>Officer Sharma</td>
+                <td>2024-10-15</td>
+                <td><span class="risk-score-badge high-risk">85%</span></td>
+                <td class="complaint-action-icons">
+                  <i class="fas fa-eye text-primary mr-2" title="View Complaint Details"></i>
+                  <i class="fas fa-user-edit text-warning" title="Assign/Reassign Officer"></i>
+                </td>
+              </tr>
+              <tr>
+                <td>#12346</td>
+                <td>Jane Doe</td>
+                <td>Phishing</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>New</td>
+                <td>Officer Verma</td>
+                <td>2024-10-16</td>
+                <td><span class="risk-score-badge medium-risk">60%</span></td>
+                <td class="complaint-action-icons">
+                  <i class="fas fa-eye text-primary mr-2" title="View Complaint Details"></i>
+                  <i class="fas fa-user-edit text-warning" title="Assign/Reassign Officer"></i>
+                </td>
+              </tr>
+              <!-- Add More Rows with Dummy Data -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Complaint View Section -->
+    <div class="card card-custom mb-4">
+      <div class="card-header bg-secondary text-white">
+        <h4>Detailed Complaint View</h4>
+      </div>
+      <div class="card-body">
+        <ul class="nav nav-tabs" id="complaintTabs" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab">Overview</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="evidence-tab" data-toggle="tab" href="#evidence" role="tab">Evidence</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="victim-tab" data-toggle="tab" href="#victim" role="tab">Victim Details</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="suspect-tab" data-toggle="tab" href="#suspect" role="tab">Suspect Information</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="complaintTabContent">
+          <div class="tab-pane fade show active" id="overview" role="tabpanel">
+            <div class="mt-3">
+              <h5>Complaint Summary</h5>
+              <p>Type: Financial Fraud</p>
+              <p>Risk Level: <span class="badge badge-high">High</span></p>
+              <p>Date of Report: 2024-10-15</p>
+              <p>Status: In Progress</p>
+              <p><strong>AI Risk Score: <span class="risk-score-badge high-risk">85%</span></strong></p>
+            </div>
+            <div class="mt-3">
+              <h5>Complaint History Timeline</h5>
+              <ul>
+                <li>Complaint submitted by John Doe on 2024-10-10</li>
+                <li>Assigned to Officer Sharma on 2024-10-12</li>
+                <li>Initial investigation started on 2024-10-13</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="evidence" role="tabpanel">
+            <div class="mt-3">
+              <h5>Evidence Files</h5>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>File Name</th>
+                    <th>File Type</th>
+                    <th>Upload Timestamp</th>
+                    <th>Extracted Entities</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>ChatScreenshot1.png</td>
+                    <td>Image</td>
+                    <td>2024-10-13 14:00</td>
+                    <td>Phone Numbers: +123456789</td>
+                    <td>
+                      <button class="btn btn-sm btn-primary">View</button>
+                      <button class="btn btn-sm btn-success">Download</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>TransactionRecord.pdf</td>
+                    <td>PDF</td>
+                    <td>2024-10-14 09:45</td>
+                    <td>Account Numbers: 1234-5678-9012</td>
+                    <td>
+                      <button class="btn btn-sm btn-primary">View</button>
+                      <button class="btn btn-sm btn-success">Download</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="victim" role="tabpanel">
+            <div class="mt-3">
+              <h5>Victim Contact Information</h5>
+              <p>Name: John Doe</p>
+              <p>Mobile: +123456789</p>
+              <p>Email: johndoe@example.com</p>
+              <p>Address: 123 Street, City, Country</p>
+              <h5>Identification Proofs</h5>
+              <a href="#">View Aadhar Card</a><br>
+              <a href="#">View Driving License</a>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="suspect" role="tabpanel">
+            <div class="mt-3">
+              <h5>Suspect Details</h5>
+              <p>Name: Jane Smith</p>
+              <p>ID Type: Passport</p>
+              <p>ID Number: XYZ123456</p>
+              <p>Country: Country X</p>
+              <h5>Link Analysis</h5>
+              <div id="map"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Case Assignment Section -->
+    <div class="card card-custom mb-4">
+      <div class="card-header bg-success text-white">
+        <h4>Case Assignment</h4>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h5>Assign/Reassign Officer</h5>
+            <div class="form-group">
+              <label for="officer-list">Select Officer</label>
+              <select id="officer-list" class="form-control">
+                <option value="officer1">Officer Sharma - Financial Fraud Specialist</option>
+                <option value="officer2">Officer Verma - Cyber Phishing Expert</option>
+                <option value="officer3">Officer Khan - General Investigation</option>
+              </select>
+            </div>
+            <button class="btn btn-primary">Assign Case</button>
+          </div>
+          <div class="col-md-6">
+            <h5>Officer Availability</h5>
+            <ul>
+              <li>Officer Sharma - <span class="officer-busy">Busy</span></li>
+              <li>Officer Verma - <span class="officer-available">Available</span></li>
+              <li>Officer Khan - <span class="officer-full">Fully Occupied</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize Leaflet Map for Link Analysis
+      var map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Example Marker for Suspect Location
+      L.marker([28.6139, 77.2090]).addTo(map) // Delhi
+        .bindPopup('<b>Suspect Location</b><br>Delhi, India').openPopup();
+
+      // Filter Functionality (Placeholder - Add actual filtering logic here)
+      $('#filter-type, #filter-risk-level, #filter-status, #filter-officer').on('change keyup', function () {
+        // Implement filtering logic based on selected filters
+        console.log('Filter changed');
+      });
+
+      // Action Icons Functionality
+      $('.complaint-action-icons .fa-eye').on('click', function () {
+        // Logic for viewing detailed complaint information
+        alert('View Complaint Details - Functionality to be implemented');
+      });
+
+      $('.complaint-action-icons .fa-user-edit').on('click', function () {
+        // Logic for assigning or reassigning an officer
+        alert('Assign/Reassign Officer - Functionality to be implemented');
+      });
+    });
+  </script>
+</body>
+
+</html>

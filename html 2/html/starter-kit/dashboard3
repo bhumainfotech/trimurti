@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Real-Time Alerts Dashboard">
+    <title>Tri-Murti Real-Time Alerts</title>
+
+    <!-- Poco Admin Theme CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css"> <!-- Poco Admin Styles -->
+    <link rel="stylesheet" href="../assets/css/fix-header-sidebar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <!-- External JS Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        .badge-high {
+            background-color: red;
+            color: white;
+        }
+
+        .badge-medium {
+            background-color: orange;
+            color: white;
+        }
+
+        .badge-low {
+            background-color: green;
+            color: white;
+        }
+
+        .alert-summary-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 10px;
+        }
+
+        .alert-summary-card h5 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .alert-summary-card p {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .action-button {
+            margin: 5px 10px;
+        }
+
+        .interactive-graph {
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .timeline-slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .risk-score-badge {
+            padding: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .high-risk {
+            background-color: red;
+            color: white;
+        }
+
+        .medium-risk {
+            background-color: orange;
+            color: white;
+        }
+
+        .low-risk {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid mt-4">
+        <!-- Alerts Summary Section -->
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="alert-summary-card bg-danger text-white">
+                    <h5>Total Alerts</h5>
+                    <p>50</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="alert-summary-card bg-warning text-white">
+                    <h5>Open Alerts</h5>
+                    <p>30</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="alert-summary-card bg-success text-white">
+                    <h5>Critical Alerts</h5>
+                    <p>10</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters for Alerts -->
+        <div class="filter-bar">
+            <div class="row">
+                <div class="col-md-3">
+                    <select id="filter-severity" class="form-control">
+                        <option value="all">All Severities</option>
+                        <option value="high">High Risk</option>
+                        <option value="medium">Medium Risk</option>
+                        <option value="low">Low Risk</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="filter-timeframe" class="form-control">
+                        <option value="last-hour">Last Hour</option>
+                        <option value="last-24-hours">Last 24 Hours</option>
+                        <option value="last-7-days">Last 7 Days</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="filter-category" class="form-control">
+                        <option value="all">All Categories</option>
+                        <option value="financial-fraud">Financial Fraud</option>
+                        <option value="identity-theft">Identity Theft</option>
+                        <option value="suspicious-transaction">Suspicious Transaction</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" id="filter-entity" class="form-control" placeholder="Search by Entity">
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Table -->
+        <div class="table-responsive mb-4">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Alert ID</th>
+                        <th>Category</th>
+                        <th>Severity</th>
+                        <th>Entities Involved</th>
+                        <th>Risk Score</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example Alert Row -->
+                    <tr>
+                        <td>#A123</td>
+                        <td>Financial Fraud</td>
+                        <td><span class="badge badge-high">High</span></td>
+                        <td>
+                            <i class="fas fa-user"></i> John Doe<br>
+                            <i class="fas fa-university"></i> XYZ Bank
+                        </td>
+                        <td><span class="risk-score-badge high-risk">85%</span></td>
+                        <td>2024-10-15 14:30</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary action-button">View Details</button>
+                            <button class="btn btn-sm btn-danger action-button">Freeze Account</button>
+                        </td>
+                    </tr>
+                    <!-- More Alerts -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Timeline Slider for Alerts -->
+        <div class="timeline-slider">
+            <input type="range" min="0" max="100" value="50" class="form-control-range" id="timelineRange">
+            <p class="text-center">Adjust Time Range to View Alerts</p>
+        </div>
+
+        <!-- Graph Visualization of Linked Entities -->
+        <div class="interactive-graph" id="linkedEntitiesGraph">
+            <h5>Graph Visualization of Linked Entities</h5>
+            <canvas id="graphChart"></canvas>
+        </div>
+    </div>
+
+    <!-- JavaScript for Interactive Features -->
+    <script>
+        // Initialize Leaflet Map for Link Analysis
+        document.addEventListener('DOMContentLoaded', function () {
+            // Example Graph Visualization
+            var ctx = document.getElementById('graphChart').getContext('2d');
+            var graphChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Entity A', 'Entity B', 'Entity C', 'Entity D'],
+                    datasets: [{
+                        label: 'Entity Links',
+                        data: [65, 59, 80, 81],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Example Filter Functionality (Placeholder)
+            $('#filter-severity, #filter-timeframe, #filter-category, #filter-entity').on('change keyup', function () {
+                console.log('Filters applied');
+            });
+
+            // Timeline Slider Functionality (Placeholder)
+            $('#timelineRange').on('input', function () {
+                console.log('Timeline adjusted to value: ' + $(this).val());
+            });
+        });
+    </script>
+</body>
+
+</html>
