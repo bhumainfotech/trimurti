@@ -1,0 +1,12 @@
+version: "2.0"
+rules:
+  - rule: Submit a complaint
+    steps:
+      - intent: submit_complaint
+      - action: action_submit_complaint
+
+  - rule: Track a complaint
+    steps:
+      - intent: track_complaint
+      - action: action_track_complaint
+
