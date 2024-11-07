@@ -1,0 +1,14 @@
+version: "2.0"
+nlu:
+  - intent: submit_complaint
+    examples: |
+      - I want to report a cybercrime.
+      - I need to file a complaint for an online scam.
+      - How do I submit a complaint?
+
+  - intent: track_complaint
+    examples: |
+      - I want to check the status of my complaint.
+      - Track my complaint with ID [ACK123456789](tracking_id).
+      - Can you tell me the status of my case?
+

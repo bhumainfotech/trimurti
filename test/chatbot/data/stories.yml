@@ -1,0 +1,12 @@
+version: "2.0"
+stories:
+  - story: submit_complaint_story
+    steps:
+      - intent: submit_complaint
+      - action: action_submit_complaint
+
+  - story: track_complaint_story
+    steps:
+      - intent: track_complaint
+      - action: action_track_complaint
+
